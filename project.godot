@@ -1,5 +1,4 @@
-; Engine configuration file.
-; Godot 4.7 — Game C BloomGrid. Do not mix with Hub/RSVP.
+; Godot 4.7 — BloomGrid
 config_version=5
 
 [application]

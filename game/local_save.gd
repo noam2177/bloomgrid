@@ -15,6 +15,7 @@ static func _open() -> ConfigFile:
 
 
 static func sanitize_name(raw: String) -> String:
+	# זורקים תווי בקרה וקישורים. זה שם על המסך, לא לוגין.
 	var cleaned := ""
 	for i in range(raw.length()):
 		var ch := raw.unicode_at(i)

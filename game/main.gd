@@ -562,6 +562,7 @@ func _board_cell(p: Vector2) -> Vector2i:
 
 
 func _press(p: Vector2) -> void:
+	# שדה השם הוא LineEdit אמיתי — לא לגנוב לו את הלחיצה.
 	if _name_box_rect().has_point(p):
 		return
 	if session.over:
@@ -803,6 +804,7 @@ func _show_time_bonus(bonus: float) -> void:
 
 
 func _try_rotate() -> void:
+	# בלי בחירה — מסובבים את החלק הראשון שעדיין במגש.
 	var idx := selected
 	if idx < 0:
 		for i in range(3):
