@@ -251,6 +251,7 @@ func _cell_rect(x: int, y: int) -> Rect2:
 func _draw_board() -> void:
 	var board_w: float = float(Board.SIZE) * float(cell + GAP)
 	var frame := Rect2(origin - Vector2(12, 12), Vector2(board_w + 18.0, board_w + 18.0))
+	draw_rect(frame.grow(10.0), Color(0.25, 0.55, 1.0, 0.10))
 	BloomPaint.glass_panel(self, frame, Color(0.05, 0.07, 0.13, 0.55), Color(0.40, 0.70, 1.0, 0.40))
 	_draw_corners(frame, Color(0.55, 0.85, 1.0, 0.85))
 	for y in range(Board.SIZE):
