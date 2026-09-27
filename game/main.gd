@@ -9,12 +9,12 @@ const SfxBus := preload("res://game/sfx_bus.gd")
 const GAP := 5
 const COLORS := [
 	Color(0.10, 0.12, 0.18),
-	Color(0.95, 0.42, 0.38),
-	Color(0.38, 0.78, 0.98),
-	Color(0.98, 0.82, 0.28),
-	Color(0.52, 0.92, 0.62),
-	Color(0.78, 0.48, 0.98),
-	Color(0.98, 0.52, 0.78),
+	Color(0.93, 0.24, 0.30),
+	Color(0.20, 0.70, 0.98),
+	Color(1.0, 0.76, 0.20),
+	Color(0.22, 0.86, 0.52),
+	Color(0.64, 0.36, 0.98),
+	Color(0.98, 0.40, 0.66),
 ]
 
 var session: GameSession
@@ -274,11 +274,9 @@ func _draw_board() -> void:
 		if key != null:
 			var rot := session.rot_of(selected)
 			var ok := session.board.can_place(str(key), hover.x, hover.y, rot)
-			var ghost: Color = Color(0.45, 1.0, 0.72, 0.42) if ok else Color(1.0, 0.28, 0.32, 0.40)
+			var ghost: Color = Color(0.35, 0.95, 0.62, 0.55) if ok else Color(1.0, 0.28, 0.32, 0.5)
 			for c in PieceCatalog.cells_of(str(key), rot):
-				var gr := _cell_rect(hover.x + c.x, hover.y + c.y)
-				draw_rect(gr, ghost)
-				draw_rect(gr, ghost.lightened(0.3), false, 2.0)
+				BloomPaint.gem(self, _cell_rect(hover.x + c.x, hover.y + c.y), ghost, true, 0.35 if ok else 0.0)
 
 
 func _draw_corners(r: Rect2, col: Color) -> void:

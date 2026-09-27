@@ -1,36 +1,58 @@
 class_name BloomPaint
 extends RefCounted
-## מלבנים עם שיפוע וברק. נראה כמו קריסטל בלי קובץ PNG.
+## אבני חן מצוירות: פאות, ברק, ובאר שקועה. בלי קובץ PNG.
 
 
 static func gem(ci: CanvasItem, r: Rect2, col: Color, filled: bool, pulse: float = 0.0) -> void:
 	if r.size.x < 2.0 or r.size.y < 2.0:
 		return
+	var shrink := clampf(r.size.x * 0.07, 1.0, 3.5)
+	var body := r.grow(-shrink)
 	if not filled:
-		ci.draw_rect(r, Color(0.055, 0.07, 0.11, 0.96))
-		var well := r.grow(-2.0)
-		ci.draw_rect(well, Color(0.03, 0.035, 0.055, 0.9))
-		ci.draw_rect(r, Color(0.16, 0.22, 0.34, 0.55), false, 1.0)
-		ci.draw_rect(Rect2(r.position + Vector2(1, 1), Vector2(r.size.x - 2.0, 2.0)), Color(1, 1, 1, 0.04))
+		ci.draw_rect(r, Color(0.015, 0.02, 0.04, 0.94))
+		ci.draw_rect(body, Color(0.008, 0.012, 0.028, 0.98))
+		var lip := maxf(body.size.y * 0.28, 3.0)
+		ci.draw_rect(Rect2(body.position, Vector2(body.size.x, lip)), Color(0.0, 0.0, 0.0, 0.42))
+		ci.draw_rect(
+			Rect2(body.position + Vector2(0.0, body.size.y - 2.0), Vector2(body.size.x, 2.0)),
+			Color(0.45, 0.62, 0.82, 0.16)
+		)
+		ci.draw_rect(r, Color(0.28, 0.40, 0.58, 0.28), false, 1.0)
 		return
-	var glow := col
-	glow.a = 0.22 + pulse * 0.28
-	ci.draw_rect(r.grow(2.0), glow)
-	ci.draw_rect(r, col.darkened(0.18))
-	var top_h: float = maxf(r.size.y * 0.22, 3.0)
-	ci.draw_rect(Rect2(r.position, Vector2(r.size.x, top_h)), col.lightened(0.32))
-	ci.draw_rect(Rect2(r.position, Vector2(3.0, r.size.y)), col.lightened(0.18))
-	ci.draw_rect(Rect2(r.position + Vector2(0.0, r.size.y - 4.0), Vector2(r.size.x, 4.0)), col.darkened(0.38))
-	var spec := Rect2(r.position + Vector2(4.0, 3.0), Vector2(r.size.x * 0.30, 3.0))
-	ci.draw_rect(spec, Color(1, 1, 1, 0.32 + pulse * 0.2))
-	ci.draw_rect(r, Color(col.r, col.g, col.b, 0.35 + pulse * 0.25), false, 1.2)
+	ci.draw_rect(Rect2(r.position + Vector2(1.6, 3.2), r.size), Color(0, 0, 0, 0.32))
+	var glow_a := 0.18 + pulse * 0.24
+	ci.draw_rect(r.grow(3.0), Color(col.r, col.g, col.b, glow_a * 0.55))
+	ci.draw_rect(r.grow(1.2), Color(col.r, col.g, col.b, glow_a))
+	ci.draw_rect(body, col.darkened(0.24))
+	var tl := body.position
+	var tr := tl + Vector2(body.size.x, 0.0)
+	var br := body.end
+	var bl := tl + Vector2(0.0, body.size.y)
+	var center := body.get_center() + Vector2(-body.size.x * 0.08, -body.size.y * 0.1)
+	ci.draw_colored_polygon(PackedVector2Array([tl, tr, center]), col.lightened(0.42))
+	ci.draw_colored_polygon(PackedVector2Array([tr, br, center]), col.darkened(0.05))
+	ci.draw_colored_polygon(PackedVector2Array([br, bl, center]), col.darkened(0.34))
+	ci.draw_colored_polygon(PackedVector2Array([bl, tl, center]), col.lightened(0.1))
+	var spec := Rect2(
+		tl + Vector2(body.size.x * 0.16, body.size.y * 0.1),
+		Vector2(maxf(body.size.x * 0.34, 3.0), maxf(body.size.y * 0.1, 2.0))
+	)
+	ci.draw_rect(spec, Color(1, 1, 1, 0.48 + pulse * 0.28))
+	ci.draw_rect(
+		Rect2(tl + Vector2(body.size.x * 0.22, body.size.y * 0.24), Vector2(maxf(body.size.x * 0.12, 2.0), 2.0)),
+		Color(1, 1, 1, 0.22)
+	)
+	ci.draw_rect(body, Color(1, 1, 1, 0.28 + pulse * 0.16), false, 1.15)
+	ci.draw_rect(r, Color(col.r, col.g, col.b, 0.7), false, 1.15)
 
 
 static func glass_panel(ci: CanvasItem, r: Rect2, fill: Color, rim: Color) -> void:
-	ci.draw_rect(r.grow(2.0), Color(rim.r, rim.g, rim.b, 0.18))
+	ci.draw_rect(Rect2(r.position + Vector2(0, 4), r.size), Color(0, 0, 0, 0.28))
+	ci.draw_rect(r.grow(3.0), Color(rim.r, rim.g, rim.b, 0.14))
 	ci.draw_rect(r, fill)
-	ci.draw_rect(r, rim, false, 1.4)
-	ci.draw_rect(Rect2(r.position + Vector2(2, 2), Vector2(r.size.x - 4.0, 3.0)), Color(1, 1, 1, 0.08))
+	ci.draw_rect(Rect2(r.position + Vector2(2, 2), Vector2(r.size.x - 4.0, r.size.y * 0.22)), Color(1, 1, 1, 0.07))
+	ci.draw_rect(r, rim, false, 1.6)
+	ci.draw_rect(r.grow(-2.0), Color(rim.r, rim.g, rim.b, 0.22), false, 1.0)
 
 
 static func piece_cells(

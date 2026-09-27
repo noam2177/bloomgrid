@@ -21,9 +21,10 @@ func rebuild(vp: Vector2) -> void:
 		stars.append({
 			"p": Vector2(rng.randf() * vp.x, rng.randf() * vp.y),
 			"layer": layer,
-			"r": 0.55 + layer * 0.5 + rng.randf() * 0.4,
+			"r": 0.7 + layer * 0.55 + rng.randf() * 0.45,
 			"tw": rng.randf() * TAU,
-			"flare": i % 17 == 0,
+			"flare": i % 11 == 0,
+			"tint": Color.from_hsv(0.52 + float(i % 6) * 0.07, 0.35, 1.0),
 		})
 	for i in range(8):
 		var warm := i % 2 == 0
@@ -82,21 +83,27 @@ func _spawn_streak(vp: Vector2) -> void:
 
 func _draw() -> void:
 	var vp := get_viewport_rect().size
-	draw_rect(Rect2(Vector2.ZERO, vp), Color(0.018, 0.022, 0.045))
-	draw_rect(Rect2(Vector2.ZERO, Vector2(vp.x, vp.y * 0.38)), Color(0.05, 0.03, 0.10, 0.22))
+	draw_rect(Rect2(Vector2.ZERO, vp), Color(0.012, 0.014, 0.035))
+	draw_rect(Rect2(Vector2.ZERO, Vector2(vp.x, vp.y * 0.42)), Color(0.08, 0.03, 0.14, 0.28))
+	draw_circle(Vector2(vp.x * 0.5, vp.y * 1.05), vp.x * 0.55, Color(0.10, 0.16, 0.32, 0.22))
 	for n in nebulae:
-		draw_circle(n["p"], float(n["s"]), n["c"])
-		draw_circle(n["p"] + Vector2(40, -20), float(n["s"]) * 0.55, n["c2"])
+		draw_circle(n["p"], float(n["s"]) * 1.15, n["c"])
+		draw_circle(n["p"] + Vector2(48, -24), float(n["s"]) * 0.62, n["c2"])
+		draw_circle(n["p"] + Vector2(-30, 18), float(n["s"]) * 0.28, Color(n["c2"].r, n["c2"].g, n["c2"].b, 0.12))
 	for d in dust:
-		draw_circle(d["p"], 1.1, Color(0.7, 0.8, 1.0, float(d["a"])))
+		draw_circle(d["p"], 1.3, Color(0.75, 0.84, 1.0, float(d["a"])))
 	for s in stars:
 		var tw: float = 0.35 + 0.65 * absf(sin(float(s["tw"])))
-		var col := Color(0.78, 0.88, 1.0, tw)
+		var tint: Color = s["tint"]
+		var col := Color(tint.r, tint.g, tint.b, tw)
+		if bool(s["flare"]):
+			draw_circle(s["p"], float(s["r"]) * 3.2, Color(tint.r, tint.g, tint.b, tw * 0.16))
 		draw_circle(s["p"], float(s["r"]), col)
-		if bool(s["flare"]) and tw > 0.75:
-			var f: float = float(s["r"]) * 4.5
-			draw_line(s["p"] + Vector2(-f, 0), s["p"] + Vector2(f, 0), Color(1, 1, 1, tw * 0.35), 1.0)
-			draw_line(s["p"] + Vector2(0, -f), s["p"] + Vector2(0, f), Color(1, 1, 1, tw * 0.35), 1.0)
+		if bool(s["flare"]) and tw > 0.72:
+			var f: float = float(s["r"]) * 6.5
+			var arm := Color(1, 1, 1, tw * 0.45)
+			draw_line(s["p"] + Vector2(-f, 0), s["p"] + Vector2(f, 0), arm, 1.3)
+			draw_line(s["p"] + Vector2(0, -f), s["p"] + Vector2(0, f), arm, 1.3)
 	for st in streaks:
 		var a: float = clampf(float(st["life"]) / 0.6, 0.0, 1.0)
 		var tail: Vector2 = st["v"].normalized() * -28.0
