@@ -30,13 +30,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.7-stable
+          version: 4.4.1-stable
           use-dotnet: false
           include-templates: true
       - name: Export Web
         run: |
           mkdir -p build/web
-          godot --headless --export-release "Web" build/web/index.html
+          godot --headless --path . --export-release "Web" build/web/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
