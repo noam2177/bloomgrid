@@ -8,7 +8,7 @@
 
 ![BloomGrid](store-ops/assets/play/feature-1024x500.png)
 
-עדיין לא בחנות. אפשר לשחק על Windows אם יש Godot 4.7. היעד הוא Android (API 36), אופליין, בלי חשבון.
+עדיין לא בחנות. אפשר לשחק על Windows אם יש Godot 4.7. היעד הוא Android (API 36), אופליין, בלי חשבון. מהטלפון: ראה [docs/MOBILE_PLAY.md](docs/MOBILE_PLAY.md) (APK או ייצוא Web).
 
 יש גם מצב Race: שעון יורד, ניקוי מחזיר שניות. Classic בלי לחץ זמן.
 
