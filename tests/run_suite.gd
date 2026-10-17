@@ -23,6 +23,7 @@ func _init() -> void:
 	failed += _run("sanitize_name", func() -> String: return _sanitize_name())
 	failed += _run("tick_ignores_negative", func() -> String: return _tick_ignores_negative())
 	failed += _run("layout_phone_fits", func() -> String: return _layout_phone_fits())
+	failed += _run("layout_graphics_scale", func() -> String: return _layout_graphics_scale())
 	print("BLOOMGRID_TESTS failed=", failed)
 	quit(1 if failed else 0)
 
@@ -237,4 +238,17 @@ func _layout_phone_fits() -> String:
 		return "notch"
 	if not LayoutFit.fits(Vector2(390, 844), 0.0, 44.0, 0.0, 34.0):
 		return "390x844"
+	return ""
+
+
+func _layout_graphics_scale() -> String:
+	var m: Dictionary = LayoutFit.compute(Vector2(720, 1280), 0.0, 0.0, 0.0, 0.0)
+	var c: int = int(m["cell"])
+	if c < 40:
+		return "cell_too_small=%s" % c
+	if c > 88:
+		return "cell_too_large=%s" % c
+	var m2: Dictionary = LayoutFit.compute(Vector2(390, 844), 0.0, 44.0, 0.0, 34.0)
+	if int(m2["cell"]) < LayoutFit.MIN_CELL:
+		return "iphone_mini_cell"
 	return ""

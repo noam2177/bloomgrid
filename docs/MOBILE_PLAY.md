@@ -2,6 +2,8 @@
 
 BloomGrid בנוי לנייד ב-Godot: viewport **720×1280**, אוריינטציה אנכית, מגע (`InputEventScreenTouch`), רנדרר `mobile`, ופריסה דינמית (`game/layout_fit.gd`) עם safe area ומגש מעל שורות הכפתורים.
 
+תהליך המרה לשימוש חוזר בפרויקטים אחרים: [`MOBILE_CONVERSION_PLAYBOOK.md`](MOBILE_CONVERSION_PLAYBOOK.md). שער אבטחה/מובייל: `py -3 tools/mobile_gate.py`.
+
 ## אנדרואיד (מומלץ לשחקנים)
 
 1. התקן [Godot 4.7](https://godotengine.org/) ו־Android build template (Editor → Manage Export Templates).
