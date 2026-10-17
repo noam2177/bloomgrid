@@ -6,6 +6,7 @@ const BloomPaint := preload("res://game/bloom_paint.gd")
 const LocalSave := preload("res://game/local_save.gd")
 const Starfield := preload("res://game/starfield.gd")
 const SfxBus := preload("res://game/sfx_bus.gd")
+const LayoutFit := preload("res://game/layout_fit.gd")
 const GAP := 5
 const COLORS := [
 	Color(0.10, 0.12, 0.18),
@@ -54,6 +55,11 @@ var time_pop: float = 0.0
 var time_pop_text: String = ""
 var name_box: LineEdit
 var player_name: String = ""
+var _inset_l: float = 0.0
+var _inset_t: float = 0.0
+var _inset_r: float = 0.0
+var _inset_b: float = 0.0
+var _tray_box_w: float = 210.0
 
 
 func _ready() -> void:
@@ -96,7 +102,7 @@ func _make_name_box() -> void:
 func _layout_name_box() -> void:
 	if name_box == null:
 		return
-	name_box.position = Vector2(size.x - 232.0, 18.0)
+	name_box.position = Vector2(size.x - _inset_r - 214.0, _inset_t + 18.0)
 	name_box.size = Vector2(198, 34)
 	name_box.visible = true
 	name_box.z_index = 20
@@ -168,14 +174,45 @@ func _tick_fx(items: Array[Dictionary], delta: float) -> Array[Dictionary]:
 	return live
 
 
+func _safe_margins() -> Vector4:
+	var m := Vector4(0.0, 0.0, 0.0, 0.0)
+	var vp := get_viewport()
+	if vp == null or size.x < 1.0 or size.y < 1.0:
+		return m
+	var vr := vp.get_visible_rect()
+	if vr.size.x < 1.0 or vr.size.y < 1.0:
+		return m
+	var safe := DisplayServer.get_display_safe_area()
+	var sx: float = size.x / vr.size.x
+	var sy: float = size.y / vr.size.y
+	m.x = maxf(0.0, (safe.position.x - vr.position.x) * sx)
+	m.y = maxf(0.0, (safe.position.y - vr.position.y) * sy)
+	m.z = maxf(0.0, (vr.end.x - safe.end.x) * sx)
+	m.w = maxf(0.0, (vr.end.y - safe.end.y) * sy)
+	return m
+
+
 func _layout() -> void:
-	var usable: float = minf(size.x - 36.0, size.y * 0.48)
-	cell = maxi(int(usable / float(Board.SIZE)) - GAP, 26)
-	var board_w: float = float(Board.SIZE) * float(cell + GAP)
-	origin = Vector2((size.x - board_w) * 0.5, 168.0)
+	var sm := _safe_margins()
+	_inset_l = sm.x
+	_inset_t = sm.y
+	_inset_r = sm.z
+	_inset_b = sm.w
+	var fit: Dictionary = LayoutFit.compute(size, _inset_l, _inset_t, _inset_r, _inset_b)
+	cell = int(fit["cell"])
+	origin = fit["origin"]
+	_tray_box_w = float(fit["box_w"])
 	if shake > 0.0:
 		origin += Vector2(sin(shake * 40.0) * shake * 8.0, cos(shake * 33.0) * shake * 6.0)
 	_layout_name_box()
+
+
+func _chrome_row1_y() -> float:
+	return size.y - _inset_b - 132.0
+
+
+func _chrome_row2_y() -> float:
+	return size.y - _inset_b - 78.0
 
 
 func _font() -> Font:
@@ -312,7 +349,7 @@ func _tray_origin() -> Vector2:
 
 func _tray_box(i: int) -> Rect2:
 	var o := _tray_origin()
-	var box_w: float = minf(210.0, (size.x - 48.0) / 3.0 - 8.0)
+	var box_w: float = _tray_box_w
 	return Rect2(o + Vector2(i * (box_w + 12.0), 0), Vector2(box_w, box_w))
 
 
@@ -354,31 +391,31 @@ func _draw_drag_piece() -> void:
 
 
 func _restart_rect() -> Rect2:
-	return Rect2(Vector2(16, size.y - 132), Vector2(140, 44))
+	return Rect2(Vector2(_inset_l + 16.0, _chrome_row1_y()), Vector2(140, 44))
 
 
 func _scores_rect() -> Rect2:
-	return Rect2(Vector2(164, size.y - 132), Vector2(130, 44))
+	return Rect2(Vector2(_inset_l + 164.0, _chrome_row1_y()), Vector2(130, 44))
 
 
 func _mute_rect() -> Rect2:
-	return Rect2(Vector2(302, size.y - 132), Vector2(110, 44))
+	return Rect2(Vector2(_inset_l + 302.0, _chrome_row1_y()), Vector2(110, 44))
 
 
 func _privacy_rect() -> Rect2:
-	return Rect2(Vector2(size.x - 136.0, size.y - 132), Vector2(120, 44))
+	return Rect2(Vector2(size.x - _inset_r - 136.0, _chrome_row1_y()), Vector2(120, 44))
 
 
 func _classic_rect() -> Rect2:
-	return Rect2(Vector2(16, size.y - 78), Vector2(140, 44))
+	return Rect2(Vector2(_inset_l + 16.0, _chrome_row2_y()), Vector2(140, 44))
 
 
 func _race_rect() -> Rect2:
-	return Rect2(Vector2(164, size.y - 78), Vector2(130, 44))
+	return Rect2(Vector2(_inset_l + 164.0, _chrome_row2_y()), Vector2(130, 44))
 
 
 func _rotate_rect() -> Rect2:
-	return Rect2(Vector2(302, size.y - 78), Vector2(200, 44))
+	return Rect2(Vector2(_inset_l + 302.0, _chrome_row2_y()), Vector2(200, 44))
 
 
 func _again_rect() -> Rect2:

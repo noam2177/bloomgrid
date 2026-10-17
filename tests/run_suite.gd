@@ -2,6 +2,8 @@ extends SceneTree
 ## טסטים headless — בלי חלון, בלי אדם.
 ## godot --headless --path . -s res://tests/run_suite.gd
 
+const LayoutFit := preload("res://game/layout_fit.gd")
+
 func _init() -> void:
 	var failed := 0
 	failed += _run("place_and_row_clear", func() -> String: return _place_and_row_clear())
@@ -20,6 +22,7 @@ func _init() -> void:
 	failed += _run("clamp_score", func() -> String: return _clamp_score())
 	failed += _run("sanitize_name", func() -> String: return _sanitize_name())
 	failed += _run("tick_ignores_negative", func() -> String: return _tick_ignores_negative())
+	failed += _run("layout_phone_fits", func() -> String: return _layout_phone_fits())
 	print("BLOOMGRID_TESTS failed=", failed)
 	quit(1 if failed else 0)
 
@@ -224,4 +227,14 @@ func _tick_ignores_negative() -> String:
 	s.tick(-4.0)
 	if s.time_left != 20.0 or s.over:
 		return "neg tick"
+	return ""
+
+
+func _layout_phone_fits() -> String:
+	if not LayoutFit.fits(Vector2(720, 1280), 0.0, 0.0, 0.0, 0.0):
+		return "720x1280"
+	if not LayoutFit.fits(Vector2(720, 1280), 0.0, 48.0, 0.0, 36.0):
+		return "notch"
+	if not LayoutFit.fits(Vector2(390, 844), 0.0, 44.0, 0.0, 34.0):
+		return "390x844"
 	return ""
